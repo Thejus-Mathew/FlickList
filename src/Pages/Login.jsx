@@ -67,7 +67,7 @@ function Login() {
                 <div className="border w-100 my-5"></div>
                 <span className='position-absolute bg-light px-3 text-bold'>OR</span>
             </div>
-            <MDBBtn size='lg' color='light' className='w-100 border-2 border mb-4' onClick={handleGoogle}><img  src={googleIcon} className='me-3' height={"20px"} alt="" />Continue with google</MDBBtn>
+            <MDBBtn size='lg' color='light' className='w-100 border-2 border mb-4 fs-6' onClick={handleGoogle}><img  src={googleIcon} className='me-3' height={"20px"} alt="" />Continue with google</MDBBtn>
         </div>
       </div>
     </>
