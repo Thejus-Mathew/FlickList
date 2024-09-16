@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } f
 import { auth, db } from '../firebase/configure'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
+import logo from '../Images/logo.png'
 
 
 function Register() {
@@ -66,8 +67,9 @@ function Register() {
     <>
         <div className="main d-flex justify-content-center align-items-center" style={{height:"100vh",backgroundColor:"rgb(220,250,250"}}>
             <div className="container bg-light rounded-5 shadow-lg px-5" style={{width:"33%",minWidth:"380px"}}>
-                <h3 className='text-center mt-5 '>Register</h3>
-                <MDBInput label="Full Name" className='my-5' id="name" type="text" size="lg" onChange={(e)=>setName(e.target.value)}/>
+                <h2 className='py-4 d-flex align-items-center justify-content-center'><img src={logo} width={"40px"} alt="" /><span className='Flick'>Flick</span><span className='List'>List</span></h2>
+                <h3>Register</h3>
+                <MDBInput label="Full Name" className='my-5 mt-3' id="name" type="text" size="lg" onChange={(e)=>setName(e.target.value)}/>
                 <MDBInput label="Email Address" className='my-5' id="email" type="text" size="lg" onChange={(e)=>setEmail(e.target.value)}/>
                 <MDBInput label="Password" className='my-5' id="password" type="password" size="lg" onChange={(e)=>setPassword(e.target.value)}/>
                 <MDBBtn size='lg' className='w-100 mb-3' onClick={handleRegister}>Register</MDBBtn>

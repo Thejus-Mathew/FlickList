@@ -5,6 +5,7 @@ import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup} from '
 import { auth, db } from '../firebase/configure'
 import { useNavigate } from 'react-router-dom'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
+import logo from '../Images/logo.png'
 
 
 
@@ -54,8 +55,9 @@ function Login() {
     <>
       <div className="main d-flex justify-content-center align-items-center" style={{height:"100vh",backgroundColor:"rgb(220,250,250"}}>
         <div className="container rounded-5 bg-light shadow-lg px-5" style={{width:"33%",minWidth:"380px"}}>
-            <h3 className='text-center mt-5 '>Login</h3>
-            <MDBInput label="Email Address" className='my-5' id="email" type="text" size="lg" onChange={(e)=>setEmail(e.target.value)} />
+            <h2 className='py-4 d-flex align-items-center justify-content-center'><img src={logo} width={"40px"} alt="" /><span className='Flick'>Flick</span><span className='List'>List</span></h2>
+            <h3>Login</h3>
+            <MDBInput label="Email Address" className='my-5 mt-3' id="email" type="text" size="lg" onChange={(e)=>setEmail(e.target.value)} />
             <MDBInput label="Password" className='my-5' id="password" type="password" size="lg" onChange={(e)=>setPassword(e.target.value)}/>
             <MDBBtn size='lg' className='w-100 mb-3' onClick={handleLogin}>Login</MDBBtn>
             <div className="register d-flex justify-content-end">
