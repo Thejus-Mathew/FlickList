@@ -182,13 +182,13 @@ function Dashboard() {
         <div className="banner position-relative d-flex justify-content-center align-items-center">
           <MDBCarousel style={{width:"100vw"}}>
           <MDBCarouselItem itemId={1} interval={2500} >
-              <img src={banner1} className='d-block w-100' style={{aspectRatio:"3/1"}} alt='...' />
+              <img src={banner1} className='d-block w-100 bannerImage' alt='...' />
           </MDBCarouselItem>
           <MDBCarouselItem itemId={2} interval={2500}>
-              <img src={banner2} className='d-block w-100' style={{aspectRatio:"3/1"}} alt='...' />
+              <img src={banner2} className='d-block w-100 bannerImage'  alt='...' />
           </MDBCarouselItem>
           <MDBCarouselItem itemId={3} interval={2500}>
-              <img src={banner3} className='d-block w-100' style={{aspectRatio:"3/1"}} alt='...' />
+              <img src={banner3} className='d-block w-100 bannerImage' alt='...' />
           </MDBCarouselItem>
           </MDBCarousel>
           <div className="search position-absolute p-3 border border-1" style={{height:"clamp(100px,10vw,200px)"}}>

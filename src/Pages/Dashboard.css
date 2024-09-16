@@ -2,3 +2,14 @@
     backdrop-filter: blur(5px);
     text-shadow: 0px 0px 6px black;
 }
+.bannerImage{
+    aspect-ratio: 3/1;
+}
+
+
+
+@media screen and (max-width:500px){
+    .bannerImage{
+        aspect-ratio: 3/2.5;
+    }
+}
