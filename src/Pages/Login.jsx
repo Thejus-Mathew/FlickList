@@ -1,11 +1,10 @@
 import { MDBBtn, MDBInput } from 'mdb-react-ui-kit'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import googleIcon from '../Images/Google_Icon.png'
-import { getRedirectResult, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup} from 'firebase/auth'
 import { auth, db } from '../firebase/configure'
 import { useNavigate } from 'react-router-dom'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { isMobile } from 'react-device-detect'
 
 
 
@@ -28,13 +27,9 @@ function Login() {
         }
     }
 
-
     const handleGoogle = async ()=>{
       try{
         const provider =new GoogleAuthProvider()
-        if (isMobile) {
-          await signInWithRedirect(auth, provider);
-        } else {
         const result = await signInWithPopup(auth,provider)
         const user = result.user
         const docRef = doc(db,"users",user.uid)
@@ -50,46 +45,10 @@ function Login() {
           })
         }
         navigate("/dashboard")
-      }
       }catch(error){
         alert(error.message)
       }
   }
-
-
-  const handleUserData = async (user) => {
-    const docRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(docRef);
-    const data = docSnap.data();
-  
-    if (!data) {
-      await setDoc(doc(db, "users", user.uid), {
-        name: user.displayName,
-        avatar: user.photoURL,
-        email: user.email,
-        password,
-        content: []
-      });
-    }
-  }
-
-
-  const handleRedirectResult = async () => {
-    try {
-      const result = await getRedirectResult(auth);
-      if (result) {
-        const user = result.user;
-        await handleUserData(user);
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      if (error.message) alert(error.message);
-    }
-  }
-
-  useEffect(()=>{
-    handleRedirectResult()
-  },[])
 
   return (
     <>
