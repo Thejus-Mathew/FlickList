@@ -339,7 +339,7 @@ function Dashboard() {
                         </MDBCard>
                         <div className='text-light px-2 py-2'>
                           <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
-                          <div className="button d-flex justify-content-between mt-3 px-3 pb-3">
+                          <div className="button d-flex justify-content-between mt-3 pb-3">
                               <button className='btn btn-sm btn-info' onClick={()=>moveToWatched(item)}>Add to watched</button>
                               <button className='btn btn-sm btn-danger' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
                           </div>
