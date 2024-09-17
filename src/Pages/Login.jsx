@@ -1,4 +1,4 @@
-import { MDBBtn, MDBInput } from 'mdb-react-ui-kit'
+import { MDBBtn, MDBInput, MDBSpinner } from 'mdb-react-ui-kit'
 import React, { useState } from 'react'
 import googleIcon from '../Images/Google_Icon.png'
 import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup} from 'firebase/auth'
@@ -17,8 +17,12 @@ function Login() {
     const navigate = useNavigate()
 
 
+    const[loading,setLoading] = useState(false)
+    const[gLoading,setGLoading] = useState(false)
+
 
     const handleLogin =async()=>{
+        setLoading(true)
         try{
             await signInWithEmailAndPassword(auth,email,password)
             navigate("/dashboard")
@@ -26,9 +30,11 @@ function Login() {
         catch(error){
             alert(error.message.slice(error.message.indexOf("(")+6,error.message.indexOf(")")))
         }
+        setLoading(false)
     }
 
     const handleGoogle = async ()=>{
+      setGLoading(true)
       try{
         const provider =new GoogleAuthProvider()
         const result = await signInWithPopup(auth,provider)
@@ -50,6 +56,7 @@ function Login() {
       }catch(error){
         alert(error.message)
       }
+      setGLoading(false)
   }
 
   return (
@@ -60,7 +67,9 @@ function Login() {
             <h3>Login</h3>
             <MDBInput label="Email Address" className='my-5 mt-3' id="email" type="text" size="lg" onChange={(e)=>setEmail(e.target.value)} />
             <MDBInput label="Password" className='my-5' id="password" type="password" size="lg" onChange={(e)=>setPassword(e.target.value)}/>
-            <MDBBtn size='lg' className='w-100 mb-3' onClick={handleLogin}>Login</MDBBtn>
+            <MDBBtn disabled={loading || gLoading} size='lg' className='w-100 mb-3' onClick={handleLogin}>
+              {loading?<>Logging In&nbsp;&nbsp;<MDBSpinner grow size='sm' role='status' tag='span' className='me-2' /><MDBSpinner grow size='sm' role='status' tag='span' className='me-2' /><MDBSpinner grow size='sm' role='status' tag='span' className='me-2' /></>:<>Login</>}
+            </MDBBtn>
             <div className="register d-flex justify-content-end">
                 New User? <span className='text-primary ms-1 text-decoration-underline' style={{cursor: 'pointer'}} onClick={()=>navigate('/register')}> Register Here</span>
             </div>
@@ -68,7 +77,11 @@ function Login() {
                 <div className="border w-100 my-5"></div>
                 <span className='position-absolute bg-light px-3 text-bold'>OR</span>
             </div>
-            <MDBBtn size='lg' color='light' className='w-100 border-2 border mb-4 fs-6' onClick={handleGoogle}><img  src={googleIcon} className='me-3' height={"20px"} alt="" />Continue with google</MDBBtn>
+            <MDBBtn size='lg' disabled={gLoading || loading} color='light' className='w-100 border-2 border mb-4 fs-6' onClick={handleGoogle}>
+              {gLoading
+                ?<><img  src={googleIcon} className='me-3' height={"20px"} alt="" />google verification&nbsp;&nbsp;<MDBSpinner grow size='sm' role='status' tag='span' className='me-2' /><MDBSpinner grow size='sm' role='status' tag='span' className='me-2' /><MDBSpinner grow size='sm' role='status' tag='span' className='me-2' /></>
+                :<><img  src={googleIcon} className='me-3' height={"20px"} alt="" />Continue with google</>}
+            </MDBBtn>
         </div>
       </div>
     </>
