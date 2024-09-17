@@ -5,7 +5,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
 import './Dashboard.css'
 import logo from '../Images/logo.png'
-import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardText, MDBCardTitle, MDBCarousel, MDBCarouselItem } from 'mdb-react-ui-kit'
+import { MDBBtn, MDBCard, MDBCardImage, MDBCarousel, MDBCarouselItem } from 'mdb-react-ui-kit'
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import { Button, Modal, Offcanvas } from 'react-bootstrap'
@@ -19,6 +19,9 @@ function Dashboard() {
 
   const[searchLoading,setSearchLoading] = useState(false)
   const[modalLoading,setModalLoading] = useState(false)
+  const[addWLLoading,setAddWLLoading] = useState(false)
+  const[addWatchLoading,setAddWatchLoading] = useState(false)
+  const[deleteLoading,setDeleteLoading] = useState(false)
 
     const[user,setUser]=useState(null)
     const navigate = useNavigate()
@@ -129,6 +132,7 @@ function Dashboard() {
 
 
     const addToWatchlist = async()=>{
+      setAddWLLoading(true)
       let currentMovie = movie
       currentMovie.watchlist = true
       let currentUser = user
@@ -145,9 +149,13 @@ function Dashboard() {
           }
         }
       }
+      setAddWLLoading(false)
       setLgShow(false)
     }
+
+
     const addToWatched = async()=>{
+      setAddWatchLoading(true)
       let currentMovie = movie
       currentMovie.watchlist = false
       let currentUser = user
@@ -163,7 +171,7 @@ function Dashboard() {
             alert(error.message)
           }
         }
-      }
+      }setAddWatchLoading(false)
       setLgShow(false)
     }
 
@@ -187,6 +195,7 @@ function Dashboard() {
 
 
     const deleteMovie = async(item)=>{
+      setDeleteLoading(item.imdbID)
       let currentUser = { ...user }
       currentUser.content = currentUser.content.filter(a=>a.imdbID != item.imdbID)
       try{
@@ -199,6 +208,7 @@ function Dashboard() {
       }
       setLgShow1(false)
       setLgShow2(false)
+      setDeleteLoading(false)
     }
 
     const watchlistModal = async(item) =>{
@@ -299,15 +309,23 @@ function Dashboard() {
           <div className="search position-absolute p-3 border border-1" style={{height:"clamp(100px,10vw,200px)"}}>
             <h2 className='text-light text-center' style={{fontSize:"clamp(20px,2.5vw,50px)",marginBottom:"clamp(10px,2vw,80px)"}}>Add movies to the collection</h2>
             <div className="d-flex">
-              <input className='text-primary bg-light ps-2' value={inputValue} style={{ width: '40vw',border:"none",borderRadius:"0",outline:"none",height:"clamp(30px,3vw,70px)",fontSize:"clamp(13px,1.5vw,20px)" }} onChange={(e)=>setInputValue(e.target.value)} onInput={(e)=>movieSuggestions(e.target.value)} />
-                <select onChange={(e)=>searchBySuggestion(e)} style={{border:"none",outline:"none",height:"clamp(30px,3vw,70px)",fontSize:"clamp(13px,1.5vw,20px)",width:"30vw"}}>
-                  {
-                    suggestions?.length>0?suggestions.map((item,index)=>(
-                      <option key={index} value={item?.imdbID}>{item?.Title} ({item?.Year})</option>
-                    )):
-                    <option value=""></option>
-                  }
-                </select>
+              {
+                suggestions?.length>0
+                ?<>
+                  <input className='text-primary bg-light ps-2' value={inputValue} style={{ width: '40vw',border:"none",borderRadius:"0",outline:"none",height:"clamp(30px,3vw,70px)",fontSize:"clamp(13px,1.5vw,20px)" }} onChange={(e)=>setInputValue(e.target.value)} onInput={(e)=>movieSuggestions(e.target.value)} />
+                  <select onChange={(e)=>searchBySuggestion(e)} style={{border:"none",outline:"none",height:"clamp(30px,3vw,70px)",fontSize:"clamp(13px,1.5vw,20px)",width:"30vw"}}>
+                    {
+                      suggestions?.length>0?suggestions.map((item,index)=>(
+                        <option key={index} value={item?.imdbID}>{item?.Title} ({item?.Year})</option>
+                      )):
+                      <option value=""></option>
+                    }
+                  </select>
+                </>
+                :<>
+                  <input className='text-primary bg-light ps-2' value={inputValue} style={{ width: '70vw',border:"none",borderRadius:"0",outline:"none",height:"clamp(30px,3vw,70px)",fontSize:"clamp(13px,1.5vw,20px)" }} onChange={(e)=>setInputValue(e.target.value)} onInput={(e)=>movieSuggestions(e.target.value)} />
+                </>
+              }
               <button onClick={searchByButton} disabled={searchLoading} className='button btn text-primary bg-light ms-3 d-flex justify-content-center align-items-center' style={{height:"clamp(30px,3vw,70px)",width:"clamp(30px,3vw,70px)",fontSize:"clamp(20px,2vw,30px)"}}>
                 {searchLoading?<><i class="fa-solid fa-spinner fa-spin-pulse"></i></>:<><i className="fa-solid fa-magnifying-glass"></i></>}
               </button>
@@ -352,8 +370,20 @@ function Dashboard() {
                   </div>
                 </div>
                 <div className="action d-flex justify-content-between gap-5 px-5 pt-5 pb-3">
-                  <button className='btn btn btn-info text-light' onClick={addToWatchlist}>Add to Watchlist</button>
-                  <button className='btn btn btn-success' onClick={addToWatched}>Add to Watched</button>
+                  <button disabled={addWLLoading || addWatchLoading} className='btn btn btn-info text-light text-center' onClick={addToWatchlist}>
+                    {
+                      addWLLoading
+                      ?<>Adding <i className=" ms-4 fa-solid fa-circle-notch fa-spin"></i> &nbsp; &nbsp; &nbsp;</>
+                      :<>Add to Watchlist</>
+                    }
+                  </button>
+                  <button disabled={addWLLoading || addWatchLoading} className='btn btn btn-success' onClick={addToWatched}>
+                    {
+                      addWatchLoading
+                      ?<>Adding <i className="ms-2 fa-solid fa-circle-notch fa-spin"></i></>
+                      :<>Add to Watched</>
+                    }
+                  </button>
                 </div>
               </Modal.Body>
             </>
@@ -376,8 +406,16 @@ function Dashboard() {
                         <div className='text-light px-2 py-2'>
                           <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
                           <div className="button d-flex justify-content-between mt-3 pb-3">
-                              <button className='btn btn-sm btn-info' onClick={()=>moveToWatched(item)}>Add to watched</button>
-                              <button className='btn btn-sm btn-danger' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
+                              <button className='btn btn-sm btn-info' onClick={()=>moveToWatched(item)}>
+                                Add to watched
+                              </button>
+                              <button disabled={deleteLoading==item.imdbID} className='btn btn-sm btn-danger' onClick={()=>deleteMovie(item)}>
+                                {
+                                  (deleteLoading==item.imdbID)
+                                  ?<><i className="fa-solid fa-trash fa-bounce"></i></>
+                                  :<><i className="fa-solid fa-trash"></i></>
+                                }
+                              </button>
                           </div>
                         </div>
                       </div>
@@ -453,7 +491,13 @@ function Dashboard() {
                         <div className='text-light px-2 py-2'>
                         <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
                           <div className="button d-flex justify-content-end mt-3 px-3 pb-3">
-                              <button className='' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
+                              <button disabled={deleteLoading==item.imdbID} className='' onClick={()=>deleteMovie(item)}>
+                                {
+                                  (deleteLoading==item.imdbID)
+                                  ?<><i className="fa-solid fa-trash fa-bounce"></i></>
+                                  :<><i className="fa-solid fa-trash"></i></>
+                                }
+                              </button>
                           </div>
                         </div>
                       </div>
@@ -523,7 +567,13 @@ function Dashboard() {
                         <div className='text-light px-2 py-2'>
                         <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
                           <div className="button d-flex justify-content-end mt-3 px-3 pb-3">
-                              <button className='' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
+                              <button disabled={deleteLoading == item.imdbID} className='' onClick={()=>deleteMovie(item)}>
+                                {
+                                  (deleteLoading==item.imdbID)
+                                  ?<><i className="fa-solid fa-trash fa-bounce"></i></>
+                                  :<><i className="fa-solid fa-trash"></i></>
+                                }
+                              </button>
                           </div>
                         </div>
                       </div>
