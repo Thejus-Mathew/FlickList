@@ -46,20 +46,19 @@ function Dashboard() {
 
     useEffect(()=>{
         fetchUserData()
-    },[user])
+    },[])
 
 
     const [show, setShow] = useState(false);
-
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
     const [lgShow, setLgShow] = useState(false);
+    const [lgShow1, setLgShow1] = useState(false);
+    const [lgShow2, setLgShow2] = useState(false);
 
 
 
     const[suggestions,setSuggestions] = useState([])
-    const[allMovies,setAllMovies] = useState([])
     const[movie,setMovie] = useState({})
     const[inputValue,setInputValue] = useState("")
 
@@ -155,10 +154,10 @@ function Dashboard() {
 
 
     const moveToWatched = async (item) =>{
-      let currentUser = user
+      let currentUser = {...user}
       let currentMovie = item
       currentMovie.watchlist = false
-      currentUser.content = user.content.filter(a=>a.imdbID != item.imdbID)
+      currentUser.content = currentUser.content.filter(a=>a.imdbID != item.imdbID)
       currentUser.content.push(currentMovie)
       try{
         await setDoc(doc(db,"users",user.uid),currentUser,{ merge: true })
@@ -172,11 +171,34 @@ function Dashboard() {
 
 
     const deleteMovie = async(item)=>{
-      let currentUser = user
-      currentUser.content = user.content.filter(a=>a.imdbID != item.imdbID)
+      let currentUser = { ...user }
+      currentUser.content = currentUser.content.filter(a=>a.imdbID != item.imdbID)
       try{
         await setDoc(doc(db,"users",user.uid),currentUser,{ merge: true })
         setUser(currentUser)
+      }catch(error){
+        if(error.message){
+          alert(error.message)
+        }
+      }
+    }
+
+    const watchlistModal = async(item) =>{
+      try{
+        const response = await axios.get(`https://www.omdbapi.com/?i=${item.imdbID}&apikey=c27aadee`)
+        setMovie(response.data)
+        setLgShow1(true)
+      }catch(error){
+        if(error.message){
+          alert(error.message)
+        }
+      }
+    }
+    const watchedModal = async(item) =>{
+      try{
+        const response = await axios.get(`https://www.omdbapi.com/?i=${item.imdbID}&apikey=c27aadee`)
+        setMovie(response.data)
+        setLgShow2(true)
       }catch(error){
         if(error.message){
           alert(error.message)
@@ -308,12 +330,12 @@ function Dashboard() {
               <div className="d-flex py-3 justify-content-start gap-3" style={{overflowX:"scroll"}}>
                 {
                     user?.content.filter(item1=>item1.watchlist==true)?.length>0?user.content.filter(item1=>item1.watchlist==true).map((item,index)=>(
-                      <div className=" bg-dark" key={index}>
+                      <div className=" bg-dark" style={{width:"17vw",minWidth:"14rem"}} key={index}>
                         <MDBCard className='bg-dark text-light py-0'style={{width:"17vw",minWidth:"14rem"}}>
-                            <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} />
+                            <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} onClick={()=>watchlistModal(item)}/>
                         </MDBCard>
                         <div className='text-light px-2 py-2'>
-                          <div className='fs-5' style={{height:"60px",overflow:"hidden"}}>{item?.Title} ({item?.Year})</div>
+                          <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
                           <div className="button d-flex justify-content-between mt-3">
                               <button className='btn btn-sm btn-info' onClick={()=>moveToWatched(item)}>Add to watched</button>
                               <button className='btn btn-sm btn-danger' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
@@ -325,6 +347,38 @@ function Dashboard() {
               </div>
             </div>
         </div>
+
+
+        <Modal
+        size="lg"
+        show={lgShow1}
+        onHide={() => setLgShow1(false)}
+        aria-labelledby="example-modal-sizes-title-lg"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="example-modal-sizes-title-lg">
+            {movie?.Title} ({movie?.Year})
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="d-flex flex-wrap justify-content-around">
+              <img src={movie?.Poster} alt="" />
+              <div className="content mt-3">
+                <h6>Title: {movie?.Title}</h6>
+                <p>Plot: {movie?.Plot}</p>
+                <p>Released: {movie?.Released}</p>
+                <p>Genre: {movie?.Genre}</p>
+                <p>imdbRating: {movie?.imdbRating}/10</p>
+              </div>
+            </div>
+            <div className="action d-flex justify-content-between gap-5 px-5 pt-5 pb-3">
+            <button className='btn btn btn-info' onClick={()=>moveToWatched(item)}>Add to watched</button>
+            <button className='btn btn btn-danger' onClick={()=>deleteMovie(item)}>Delete Movie</button>
+            </div>
+          </Modal.Body>
+        </Modal>
+
+
       </section>
 
 
@@ -338,12 +392,12 @@ function Dashboard() {
               <div className="d-flex py-3 justify-content-start gap-3" style={{overflowX:"scroll"}}>
                 {
                     user?.content.filter(item1=>item1.watchlist!=true)?.length>0?user.content.filter(item1=>item1.watchlist!=true).map((item,index)=>(
-                      <div className=" bg-dark" key={index}>
+                      <div className=" bg-dark" key={index} style={{width:"17vw",minWidth:"14rem"}}>
                         <MDBCard className='bg-dark text-light py-0'style={{width:"17vw",minWidth:"14rem"}}>
-                            <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} />
+                            <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} onClick={()=>watchedModal(item)}/>
                         </MDBCard>
                         <div className='text-light px-2 py-2'>
-                          <div className='fs-5' style={{height:"60px",overflow:"hidden"}}>{item?.Title} ({item?.Year})</div>
+                        <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
                           <div className="button d-flex justify-content-end mt-3">
                               <button className='' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
                           </div>
@@ -354,6 +408,34 @@ function Dashboard() {
               </div>
             </div>
         </div>
+
+        <Modal
+        size="lg"
+        show={lgShow2}
+        onHide={() => setLgShow2(false)}
+        aria-labelledby="example-modal-sizes-title-lg"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="example-modal-sizes-title-lg">
+            {movie?.Title} ({movie?.Year})
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="d-flex flex-wrap justify-content-around">
+              <img src={movie?.Poster} alt="" />
+              <div className="content mt-3">
+                <h6>Title: {movie?.Title}</h6>
+                <p>Plot: {movie?.Plot}</p>
+                <p>Released: {movie?.Released}</p>
+                <p>Genre: {movie?.Genre}</p>
+                <p>imdbRating: {movie?.imdbRating}/10</p>
+              </div>
+            </div>
+            <div className="action d-flex justify-content-end gap-5 px-5 pt-5 pb-3">
+            <button className='btn btn btn-danger' onClick={()=>deleteMovie(item)}>Delete Movie</button>
+            </div>
+          </Modal.Body>
+        </Modal>
       </section>
 
 
@@ -365,12 +447,12 @@ function Dashboard() {
               <div className="d-flex py-3 justify-content-start gap-3" style={{overflowX:"scroll"}}>
                 {
                     user?.content?.length>0?user.content.map((item,index)=>(
-                        <div className=" bg-dark" key={index}>
+                        <div className=" bg-dark" key={index} style={{width:"17vw",minWidth:"14rem"}}>
                             <MDBCard className='bg-dark text-light py-0'style={{width:"17vw",minWidth:"14rem"}}>
-                                <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} />
+                                <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} onClick={()=>watchedModal(item)}/>
                             </MDBCard>
                             <div className='text-light px-2 py-2'>
-                              <div className='fs-5' style={{height:"60px",overflow:"hidden"}}>{item?.Title} ({item?.Year})</div>
+                            <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
                               <div className="button d-flex justify-content-end mt-3">
                                   <button className='' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
                               </div>

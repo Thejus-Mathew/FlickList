@@ -6,12 +6,12 @@ import { initializeApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDNcGP1JqjFGvP22lVRSFaNFa2G87IM1iI",
-  authDomain: "flicklist-e8ae8.firebaseapp.com",
-  projectId: "flicklist-e8ae8",
-  storageBucket: "flicklist-e8ae8.appspot.com",
-  messagingSenderId: "70433159939",
-  appId: "1:70433159939:web:f11bb21345fcb426960736"
+  apiKey: "AIzaSyCaEz5gjwPy7HS8OlVaC0r8rT749euWAqQ",
+  authDomain: "flicklist-9322f.firebaseapp.com",
+  projectId: "flicklist-9322f",
+  storageBucket: "flicklist-9322f.appspot.com",
+  messagingSenderId: "1080493773318",
+  appId: "1:1080493773318:web:7a22fd909bc418e422a987"
 };
 
 // Initialize Firebase
