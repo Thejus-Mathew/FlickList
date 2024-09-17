@@ -167,6 +167,7 @@ function Dashboard() {
           alert(error.message)
         }
       }
+      setLgShow1(false)
     }
 
 
@@ -181,6 +182,8 @@ function Dashboard() {
           alert(error.message)
         }
       }
+      setLgShow1(false)
+      setLgShow2(false)
     }
 
     const watchlistModal = async(item) =>{
@@ -372,8 +375,8 @@ function Dashboard() {
               </div>
             </div>
             <div className="action d-flex justify-content-between gap-5 px-5 pt-5 pb-3">
-            <button className='btn btn btn-info' onClick={()=>moveToWatched(item)}>Add to watched</button>
-            <button className='btn btn btn-danger' onClick={()=>deleteMovie(item)}>Delete Movie</button>
+            <button className='btn btn btn-info' onClick={()=>moveToWatched(movie)}>Add to watched</button>
+            <button className='btn btn btn-danger' onClick={()=>deleteMovie(movie)}>Delete Movie</button>
             </div>
           </Modal.Body>
         </Modal>
@@ -432,7 +435,7 @@ function Dashboard() {
               </div>
             </div>
             <div className="action d-flex justify-content-end gap-5 px-5 pt-5 pb-3">
-            <button className='btn btn btn-danger' onClick={()=>deleteMovie(item)}>Delete Movie</button>
+            <button className='btn btn btn-danger' onClick={()=>deleteMovie(movie)}>Delete Movie</button>
             </div>
           </Modal.Body>
         </Modal>
