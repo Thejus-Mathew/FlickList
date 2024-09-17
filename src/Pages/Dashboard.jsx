@@ -339,7 +339,7 @@ function Dashboard() {
                         </MDBCard>
                         <div className='text-light px-2 py-2'>
                           <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
-                          <div className="button d-flex justify-content-between mt-3">
+                          <div className="button d-flex justify-content-between mt-3 px-3 pb-3">
                               <button className='btn btn-sm btn-info' onClick={()=>moveToWatched(item)}>Add to watched</button>
                               <button className='btn btn-sm btn-danger' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
                           </div>
@@ -401,7 +401,7 @@ function Dashboard() {
                         </MDBCard>
                         <div className='text-light px-2 py-2'>
                         <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
-                          <div className="button d-flex justify-content-end mt-3">
+                          <div className="button d-flex justify-content-end mt-3 px-3 pb-3">
                               <button className='' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
                           </div>
                         </div>
@@ -445,7 +445,7 @@ function Dashboard() {
 
       <section id='Collection'>
         <div className="container-fluid pt-5 pb-3" style={{backgroundColor:"rgb(220,250,250"}}>
-            <h2 className='heading ms-3 mb-3'>Watched</h2>
+            <h2 className='heading ms-3 mb-3'>My Collection</h2>
             <div className="px-3 border border-5 mx-3">
               <div className="d-flex py-3 justify-content-start gap-3" style={{overflowX:"scroll"}}>
                 {
@@ -456,7 +456,7 @@ function Dashboard() {
                         </MDBCard>
                         <div className='text-light px-2 py-2'>
                         <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
-                          <div className="button d-flex justify-content-end mt-3">
+                          <div className="button d-flex justify-content-end mt-3 px-3 pb-3">
                               <button className='' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
                           </div>
                         </div>
