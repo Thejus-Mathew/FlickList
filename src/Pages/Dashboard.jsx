@@ -333,8 +333,8 @@ function Dashboard() {
               <div className="d-flex py-3 justify-content-start gap-3" style={{overflowX:"scroll"}}>
                 {
                     user?.content.filter(item1=>item1.watchlist==true)?.length>0?user.content.filter(item1=>item1.watchlist==true).map((item,index)=>(
-                      <div className=" bg-dark" style={{width:"17vw",minWidth:"14rem"}} key={index}>
-                        <MDBCard className='bg-dark text-light py-0'style={{width:"17vw",minWidth:"14rem"}}>
+                      <div className=" bg-dark" style={{width:"clamp(14rem,17vw,20rem)"}} key={index}>
+                        <MDBCard className='bg-dark text-light py-0'style={{width:"clamp(14rem,17vw,20rem)"}}>
                             <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} onClick={()=>watchlistModal(item)}/>
                         </MDBCard>
                         <div className='text-light px-2 py-2'>
@@ -395,8 +395,8 @@ function Dashboard() {
               <div className="d-flex py-3 justify-content-start gap-3" style={{overflowX:"scroll"}}>
                 {
                     user?.content.filter(item1=>item1.watchlist!=true)?.length>0?user.content.filter(item1=>item1.watchlist!=true).map((item,index)=>(
-                      <div className=" bg-dark" key={index} style={{width:"17vw",minWidth:"14rem"}}>
-                        <MDBCard className='bg-dark text-light py-0'style={{width:"17vw",minWidth:"14rem"}}>
+                      <div className=" bg-dark" key={index} style={{width:"clamp(14rem,17vw,20rem)"}}>
+                        <MDBCard className='bg-dark text-light py-0'style={{width:"clamp(14rem,17vw,20rem)"}}>
                             <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} onClick={()=>watchedModal(item)}/>
                         </MDBCard>
                         <div className='text-light px-2 py-2'>
@@ -445,22 +445,22 @@ function Dashboard() {
 
       <section id='Collection'>
         <div className="container-fluid pt-5 pb-3" style={{backgroundColor:"rgb(220,250,250"}}>
-            <h2 className='heading ms-3 mb-3'>My Collection</h2>
+            <h2 className='heading ms-3 mb-3'>Watched</h2>
             <div className="px-3 border border-5 mx-3">
               <div className="d-flex py-3 justify-content-start gap-3" style={{overflowX:"scroll"}}>
                 {
                     user?.content?.length>0?user.content.map((item,index)=>(
-                        <div className=" bg-dark" key={index} style={{width:"17vw",minWidth:"14rem"}}>
-                            <MDBCard className='bg-dark text-light py-0'style={{width:"17vw",minWidth:"14rem"}}>
-                                <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} onClick={()=>watchedModal(item)}/>
-                            </MDBCard>
-                            <div className='text-light px-2 py-2'>
-                            <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
-                              <div className="button d-flex justify-content-end mt-3">
-                                  <button className='' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
-                              </div>
-                            </div>
+                      <div className=" bg-dark" key={index} style={{width:"clamp(14rem,17vw,20rem)"}}>
+                        <MDBCard className='bg-dark text-light py-0'style={{width:"clamp(14rem,17vw,20rem)"}}>
+                            <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} onClick={()=>watchedModal(item)}/>
+                        </MDBCard>
+                        <div className='text-light px-2 py-2'>
+                        <div className='fs-5' style={{height:"60px",width:"100%",overflow:"hidden"}}><p>{item?.Title} ({item?.Year})</p> </div>
+                          <div className="button d-flex justify-content-end mt-3">
+                              <button className='' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
+                          </div>
                         </div>
+                      </div>
                     )):<p>Add movies to the categories</p>
                 }
               </div>
