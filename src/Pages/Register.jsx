@@ -28,7 +28,7 @@ function Register() {
             const user = auth.currentUser
             if(user){
                 await setDoc(doc(db,"users",user.uid),{
-                    name,email,password,content:[]
+                    name,email,password,content:[],uid:user.uid
                 })
             }
             alert("user registered successfully");
@@ -54,7 +54,8 @@ function Register() {
                 avatar:user.photoURL,
                 email:user.email,
                 password,
-                content:[]
+                content:[],
+                uid:user.uid
             })
           }
           navigate("/dashboard")

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import avatar from '../Images/avatar.png'
 import { auth, db } from '../firebase/configure'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
 import './Dashboard.css'
 import logo from '../Images/logo.png'
-import { MDBBtn, MDBCarousel, MDBCarouselItem } from 'mdb-react-ui-kit'
+import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardText, MDBCardTitle, MDBCarousel, MDBCarouselItem } from 'mdb-react-ui-kit'
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import { Button, Modal, Offcanvas } from 'react-bootstrap'
@@ -13,7 +13,6 @@ import banner1 from '../Images/banner1.webp'
 import banner2 from '../Images/banner2.jpg'
 import banner3 from '../Images/banner3.avif'
 import axios from 'axios'
-
 
 
 function Dashboard() {
@@ -47,7 +46,7 @@ function Dashboard() {
 
     useEffect(()=>{
         fetchUserData()
-    },[])
+    },[user])
 
 
     const [show, setShow] = useState(false);
@@ -116,12 +115,74 @@ function Dashboard() {
 
 
     const addToWatchlist = async()=>{
-      
+      let currentMovie = movie
+      currentMovie.watchlist = true
+      let currentUser = user
+      if(currentUser.content.find(item=>item.imdbID==currentMovie.imdbID)){
+        alert("Movie already added")
+      }else{
+        try{
+          currentUser.content.push(currentMovie)
+          await setDoc(doc(db,"users",user.uid),currentUser,{ merge: true })
+          setUser(currentUser)
+        }catch(error){
+          if(error.message){
+            alert(error.message)
+          }
+        }
+      }
+      setLgShow(false)
     }
     const addToWatched = async()=>{
-
+      let currentMovie = movie
+      currentMovie.watchlist = false
+      let currentUser = user
+      if(currentUser.content.find(item=>item.imdbID==currentMovie.imdbID)){
+        alert("Movie already added")
+      }else{
+        try{
+          currentUser.content.push(currentMovie)
+          await setDoc(doc(db,"users",user.uid),currentUser,{ merge: true })
+          setUser(currentUser)
+        }catch(error){
+          if(error.message){
+            alert(error.message)
+          }
+        }
+      }
+      setLgShow(false)
     }
 
+
+    const moveToWatched = async (item) =>{
+      let currentUser = user
+      let currentMovie = item
+      currentMovie.watchlist = false
+      currentUser.content = user.content.filter(a=>a.imdbID != item.imdbID)
+      currentUser.content.push(currentMovie)
+      try{
+        await setDoc(doc(db,"users",user.uid),currentUser,{ merge: true })
+        setUser(currentUser)
+      }catch(error){
+        if(error.message){
+          alert(error.message)
+        }
+      }
+    }
+
+
+    const deleteMovie = async(item)=>{
+      let currentUser = user
+      currentUser.content = user.content.filter(a=>a.imdbID != item.imdbID)
+      try{
+        await setDoc(doc(db,"users",user.uid),currentUser,{ merge: true })
+        setUser(currentUser)
+      }catch(error){
+        if(error.message){
+          alert(error.message)
+        }
+      }
+    }
 
   return (
     <>
@@ -240,17 +301,91 @@ function Dashboard() {
       </section>
 
 
-
-        
-      <div className="main d-flex justify-content-center align-items-center" style={{height:"100vh",backgroundColor:"rgb(220,250,250"}}>
-        <div className="container bg-light rounded-5 shadow-lg px-5 pb-2 d-flex flex-column align-items-center" style={{width:"33%",minWidth:"380px"}}>
-            <div className="image my-5 mb-3" style={{width:"320px",aspectRatio:"1/1"}}>
-                <img src={user?user.avatar?user.avatar:avatar:avatar} width={"100%"} height={"100%"} style={{borderRadius:"50%"}} alt="" />
+      <section id='watchlist'>
+        <div className="container-fluid pt-5 pb-3" style={{backgroundColor:"rgb(220,250,250"}}>
+            <h2 className='heading ms-3 mb-3'>Watchlist</h2>
+            <div className="ps-3 pb-3 border border-5 mx-3 px-0 d-flex justify-content-start gap-3 flex-wrap">
+                {
+                    user?.content.filter(item1=>item1.watchlist==true)?.length>0?user.content.filter(item1=>item1.watchlist==true).map((item,index)=>(
+                        <div className="mt-3 bg-dark" key={index} style={{width:"20rem"}}>
+                            <MDBCard className='bg-dark text-light' style={{width:"20rem"}}>
+                                <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} />
+                                <MDBCardBody>
+                                    <MDBCardTitle>{item?.Title} ({item?.Year})</MDBCardTitle>
+                                    <MDBCardText>
+                                        {/* {item?.Plot} */}
+                                    </MDBCardText>
+                                    <div className="button d-flex justify-content-between mt-3">
+                                        <button className='btn btn-primary' onClick={()=>moveToWatched(item)}>Add to watched</button>
+                                        <button className='btn btn-danger' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
+                                    </div>
+                                </MDBCardBody>
+                            </MDBCard>
+                        </div>
+                    )):<p>Empty Watchlist</p>
+                }
             </div>
-            <h3>{user?user.name:"Name"}</h3>
-            <p>{user?user.email:"Email Address"}</p>
         </div>
-      </div>
+      </section>
+
+
+
+
+
+      <section id='watched'>
+        <div className="container-fluid pt-5 pb-3" style={{backgroundColor:"rgb(220,250,250"}}>
+            <h2 className='heading ms-3 mb-3'>Watched</h2>
+            <div className="ps-3 pb-3 border border-5 mx-3 px-0 d-flex justify-content-start gap-3 flex-wrap">
+                {
+                    user?.content.filter(item1=>item1.watchlist!=true)?.length>0?user.content.filter(item1=>item1.watchlist!=true).map((item,index)=>(
+                        <div className="mt-3 bg-dark" key={index} style={{width:"20rem"}}>
+                            <MDBCard className='bg-dark text-light' style={{width:"20rem"}}>
+                                <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} />
+                                <MDBCardBody>
+                                    <MDBCardTitle>{item?.Title} ({item?.Year})</MDBCardTitle>
+                                    <MDBCardText>
+                                        {/* {item?.Plot} */}
+                                    </MDBCardText>
+                                    <div className="button d-flex justify-content-end mt-3">
+                                        <button className='btn btn-danger' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
+                                    </div>
+                                </MDBCardBody>
+                            </MDBCard>
+                        </div>
+                    )):<p>Add movies to watched section</p>
+                }
+            </div>
+        </div>
+      </section>
+
+
+
+      <section id='Collection'>
+        <div className="container-fluid pt-5 pb-3" style={{backgroundColor:"rgb(220,250,250"}}>
+            <h2 className='heading ms-3 mb-3'>My Collection</h2>
+            <div className="ps-3 pb-3 border border-5 mx-3 px-0 d-flex justify-content-start gap-3 flex-wrap">
+                {
+                    user?.content?.length>0?user.content.map((item,index)=>(
+                        <div className="mt-3 bg-dark" key={index} style={{width:"20rem"}}>
+                            <MDBCard className='bg-dark text-light' style={{width:"20rem"}}>
+                                <MDBCardImage src={item?.Poster} width={"100%"} position='top' alt='...' style={{aspectRatio:"3/4"}} />
+                                <MDBCardBody>
+                                    <MDBCardTitle>{item?.Title} ({item?.Year})</MDBCardTitle>
+                                    <MDBCardText>
+                                        {/* {item?.Plot} */}
+                                    </MDBCardText>
+                                    <div className="button d-flex justify-content-end mt-3">
+                                        <button className='btn btn-danger' onClick={()=>deleteMovie(item)}><i className="fa-solid fa-trash"></i></button>
+                                    </div>
+                                </MDBCardBody>
+                            </MDBCard>
+                        </div>
+                    )):<p>Add movies to the categories</p>
+                }
+            </div>
+        </div>
+      </section>
+
 
 
     </>

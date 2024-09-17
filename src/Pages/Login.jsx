@@ -42,7 +42,8 @@ function Login() {
               avatar:user.photoURL,
               email:user.email,
               password,
-              content:[]
+              content:[],
+              uid:user.uid
           })
         }
         navigate("/dashboard")
