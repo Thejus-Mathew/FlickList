@@ -17,6 +17,9 @@ import axios from 'axios'
 
 function Dashboard() {
 
+  const[searchLoading,setSearchLoading] = useState(false)
+  const[modalLoading,setModalLoading] = useState(false)
+
     const[user,setUser]=useState(null)
     const navigate = useNavigate()
 
@@ -79,36 +82,48 @@ function Dashboard() {
     }
 
     const searchBySuggestion = async(e)=>{
+      setModalLoading(true)
+      setLgShow(true)
+      setSearchLoading(true)
       try{
         const response = await axios.get(`https://www.omdbapi.com/?i=${e.target.value}&apikey=c27aadee`)
         setMovie(response.data)
         setInputValue(response.data.Title)
-        setLgShow(true)
       }catch(error){
         if(error.message){
           alert(error.message)
         }
+        setLgShow(false)
       }
+      setSearchLoading(false)
+      setModalLoading(false)
     }
 
     const searchByButton = async()=>{
+      setModalLoading(true)
+      setLgShow(true)
+      setSearchLoading(true)
       if(inputValue == "") {
+        setLgShow(false)
         alert("Fill the input field")
       }else{
         try{
           const response = await axios.get(`https://www.omdbapi.com/?t=${inputValue}&apikey=c27aadee`)
           if (response.data.Response == "False") {
+            setLgShow(false)
             alert(response.data.Error)
           }else{
             setMovie(response.data)
-            setLgShow(true)
           }
         }catch(error){
+          setLgShow(false)
           if(error.message){
             alert(error.message)
           }
         }
       }
+      setSearchLoading(false)
+      setModalLoading(false)
     }
 
 
@@ -187,26 +202,30 @@ function Dashboard() {
     }
 
     const watchlistModal = async(item) =>{
+      setModalLoading(true)
+      setLgShow1(true)
       try{
         const response = await axios.get(`https://www.omdbapi.com/?i=${item.imdbID}&apikey=c27aadee`)
         setMovie(response.data)
-        setLgShow1(true)
       }catch(error){
         if(error.message){
           alert(error.message)
         }
       }
+      setModalLoading(false)
     }
     const watchedModal = async(item) =>{
+      setModalLoading(true)
+      setLgShow2(true)
       try{
         const response = await axios.get(`https://www.omdbapi.com/?i=${item.imdbID}&apikey=c27aadee`)
         setMovie(response.data)
-        setLgShow2(true)
       }catch(error){
         if(error.message){
           alert(error.message)
         }
       }
+      setModalLoading(false)
     }
 
   return (
@@ -289,7 +308,9 @@ function Dashboard() {
                     <option value=""></option>
                   }
                 </select>
-              <button onClick={searchByButton} className='button btn text-primary bg-light ms-3 d-flex justify-content-center' style={{height:"clamp(30px,3vw,70px)",width:"clamp(30px,3vw,70px)",fontSize:"clamp(20px,2vw,30px)"}}><i className="fa-solid fa-magnifying-glass"></i></button>
+              <button onClick={searchByButton} disabled={searchLoading} className='button btn text-primary bg-light ms-3 d-flex justify-content-center align-items-center' style={{height:"clamp(30px,3vw,70px)",width:"clamp(30px,3vw,70px)",fontSize:"clamp(20px,2vw,30px)"}}>
+                {searchLoading?<><i class="fa-solid fa-spinner fa-spin-pulse"></i></>:<><i className="fa-solid fa-magnifying-glass"></i></>}
+              </button>
             </div>
           </div>
         </div>
@@ -301,27 +322,42 @@ function Dashboard() {
         onHide={() => setLgShow(false)}
         aria-labelledby="example-modal-sizes-title-lg"
         >
-          <Modal.Header closeButton>
-            <Modal.Title id="example-modal-sizes-title-lg">
-            {movie?.Title} ({movie?.Year})
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="d-flex flex-wrap justify-content-around">
-              <img src={movie?.Poster} alt="" />
-              <div className="content mt-3">
-                <h6>Title: {movie?.Title}</h6>
-                <p>Plot: {movie?.Plot}</p>
-                <p>Released: {movie?.Released}</p>
-                <p>Genre: {movie?.Genre}</p>
-                <p>imdbRating: {movie?.imdbRating}/10</p>
-              </div>
-            </div>
-            <div className="action d-flex justify-content-between gap-5 px-5 pt-5 pb-3">
-              <button className='btn btn btn-info text-light' onClick={addToWatchlist}>Add to Watchlist</button>
-              <button className='btn btn btn-success' onClick={addToWatched}>Add to Watched</button>
-            </div>
-          </Modal.Body>
+          {
+            modalLoading
+            ?<>
+              <Modal.Header closeButton>
+                <Modal.Title id="example-modal-sizes-title-lg">
+                  Loading
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body className='d-flex fs-1 justify-content-center align-items-center' style={{height:"600px"}}>
+                <i className="fa-solid fa-spinner fa-spin-pulse"></i>
+              </Modal.Body>
+            </>
+            :<>
+              <Modal.Header closeButton>
+                <Modal.Title id="example-modal-sizes-title-lg">
+                {movie?.Title} ({movie?.Year})
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="d-flex flex-wrap justify-content-around">
+                  <img src={movie?.Poster} alt="" />
+                  <div className="content mt-3">
+                    <h6>Title: {movie?.Title}</h6>
+                    <p>Plot: {movie?.Plot}</p>
+                    <p>Released: {movie?.Released}</p>
+                    <p>Genre: {movie?.Genre}</p>
+                    <p>imdbRating: {movie?.imdbRating}/10</p>
+                  </div>
+                </div>
+                <div className="action d-flex justify-content-between gap-5 px-5 pt-5 pb-3">
+                  <button className='btn btn btn-info text-light' onClick={addToWatchlist}>Add to Watchlist</button>
+                  <button className='btn btn btn-success' onClick={addToWatched}>Add to Watched</button>
+                </div>
+              </Modal.Body>
+            </>
+          }
         </Modal>
       </section>
 
@@ -358,27 +394,42 @@ function Dashboard() {
         onHide={() => setLgShow1(false)}
         aria-labelledby="example-modal-sizes-title-lg"
         >
-          <Modal.Header closeButton>
-            <Modal.Title id="example-modal-sizes-title-lg">
-            {movie?.Title} ({movie?.Year})
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="d-flex flex-wrap justify-content-around">
-              <img src={movie?.Poster} alt="" />
-              <div className="content mt-3">
-                <h6>Title: {movie?.Title}</h6>
-                <p>Plot: {movie?.Plot}</p>
-                <p>Released: {movie?.Released}</p>
-                <p>Genre: {movie?.Genre}</p>
-                <p>imdbRating: {movie?.imdbRating}/10</p>
-              </div>
-            </div>
-            <div className="action d-flex justify-content-between gap-5 px-5 pt-5 pb-3">
-            <button className='btn btn btn-info' onClick={()=>moveToWatched(movie)}>Add to watched</button>
-            <button className='btn btn btn-danger' onClick={()=>deleteMovie(movie)}>Delete Movie</button>
-            </div>
-          </Modal.Body>
+          {
+            modalLoading
+            ?<>
+              <Modal.Header closeButton>
+                <Modal.Title id="example-modal-sizes-title-lg">
+                Loading
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body className='d-flex fs-1 justify-content-center align-items-center' style={{height:"600px"}}>
+              <i className="fa-solid fa-spinner fa-spin-pulse"></i>
+              </Modal.Body>
+            </>
+            :<>
+              <Modal.Header closeButton>
+                <Modal.Title id="example-modal-sizes-title-lg">
+                {movie?.Title} ({movie?.Year})
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="d-flex flex-wrap justify-content-around">
+                  <img src={movie?.Poster} alt="" />
+                  <div className="content mt-3">
+                    <h6>Title: {movie?.Title}</h6>
+                    <p>Plot: {movie?.Plot}</p>
+                    <p>Released: {movie?.Released}</p>
+                    <p>Genre: {movie?.Genre}</p>
+                    <p>imdbRating: {movie?.imdbRating}/10</p>
+                  </div>
+                </div>
+                <div className="action d-flex justify-content-between gap-5 px-5 pt-5 pb-3">
+                <button className='btn btn btn-info' onClick={()=>moveToWatched(movie)}>Add to watched</button>
+                <button className='btn btn btn-danger' onClick={()=>deleteMovie(movie)}>Delete Movie</button>
+                </div>
+              </Modal.Body>
+            </>
+          }
         </Modal>
 
 
@@ -418,26 +469,41 @@ function Dashboard() {
         onHide={() => setLgShow2(false)}
         aria-labelledby="example-modal-sizes-title-lg"
         >
-          <Modal.Header closeButton>
-            <Modal.Title id="example-modal-sizes-title-lg">
-            {movie?.Title} ({movie?.Year})
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="d-flex flex-wrap justify-content-around">
-              <img src={movie?.Poster} alt="" />
-              <div className="content mt-3">
-                <h6>Title: {movie?.Title}</h6>
-                <p>Plot: {movie?.Plot}</p>
-                <p>Released: {movie?.Released}</p>
-                <p>Genre: {movie?.Genre}</p>
-                <p>imdbRating: {movie?.imdbRating}/10</p>
-              </div>
-            </div>
-            <div className="action d-flex justify-content-end gap-5 px-5 pt-5 pb-3">
-            <button className='btn btn btn-danger' onClick={()=>deleteMovie(movie)}>Delete Movie</button>
-            </div>
-          </Modal.Body>
+          {
+            modalLoading
+            ?<>
+              <Modal.Header closeButton>
+                <Modal.Title id="example-modal-sizes-title-lg">
+                Loading
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body className='d-flex fs-1 justify-content-center align-items-center' style={{height:"600px"}}>
+              <i className="fa-solid fa-spinner fa-spin-pulse"></i>
+              </Modal.Body>
+            </>
+            :<>
+              <Modal.Header closeButton>
+                <Modal.Title id="example-modal-sizes-title-lg">
+                {movie?.Title} ({movie?.Year})
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="d-flex flex-wrap justify-content-around">
+                  <img src={movie?.Poster} alt="" />
+                  <div className="content mt-3">
+                    <h6>Title: {movie?.Title}</h6>
+                    <p>Plot: {movie?.Plot}</p>
+                    <p>Released: {movie?.Released}</p>
+                    <p>Genre: {movie?.Genre}</p>
+                    <p>imdbRating: {movie?.imdbRating}/10</p>
+                  </div>
+                </div>
+                <div className="action d-flex justify-content-end gap-5 px-5 pt-5 pb-3">
+                <button className='btn btn btn-danger' onClick={()=>deleteMovie(movie)}>Delete Movie</button>
+                </div>
+              </Modal.Body>
+            </>
+          }
         </Modal>
       </section>
 
